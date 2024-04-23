@@ -18,6 +18,8 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
     val args:ArticleFragmentArgs by navArgs()
     lateinit var binding: FragmentArticleBinding
 
+    //here args is the argument that article fragment will receive when being called/created
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding=FragmentArticleBinding.bind(view)
@@ -26,6 +28,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
         newsViewModel=(activity as NewsActivity).newsViewModel
         val article=args.article
 
+        //loading the url of article that we got from args to webView
         binding.webView.apply {
             webViewClient= WebViewClient()
             article.url?.let {
@@ -33,6 +36,7 @@ class ArticleFragment : Fragment(R.layout.fragment_article) {
             }
         }
 
+        //adding article to favourites
         binding.fab.setOnClickListener {
             newsViewModel.addToFavourites(article)
             Snackbar.make(view,"Added to favourites",Snackbar.LENGTH_SHORT).show()

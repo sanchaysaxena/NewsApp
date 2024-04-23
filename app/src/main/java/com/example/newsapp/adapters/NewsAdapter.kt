@@ -36,7 +36,7 @@ class NewsAdapter:RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
         }
     }
     val differ=AsyncListDiffer(this,differCallback)
-    //async list differ determine difference between two list on background thread
+    //async list differ determine difference between old and new list on background thread
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {

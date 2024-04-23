@@ -9,16 +9,21 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
 import com.example.newsapp.adapters.NewsAdapter
 import com.example.newsapp.databinding.FragmentHeadlinesBinding
+import com.example.newsapp.ui.NewsActivity
 import com.example.newsapp.ui.NewsViewModel
 import com.example.newsapp.util.Constants
+import com.example.newsapp.util.Resource
 
-class HeadlinesFragment : Fragment() {
+class HeadlinesFragment : Fragment(R.layout.fragment_headlines) {
 
     lateinit var newsViewModel: NewsViewModel
     lateinit var newsAdapter: NewsAdapter
@@ -35,6 +40,52 @@ class HeadlinesFragment : Fragment() {
 
         val inflater=requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view:View=inflater.inflate(R.layout.item_error,null)
+
+        retryButton=view.findViewById(R.id.retryButton)
+        errorText=view.findViewById(R.id.errorText)
+
+        newsViewModel=(activity as NewsActivity).newsViewModel
+        setUpHeadLinesRecycler()
+
+        newsAdapter.setOnItemClickListener {
+            val bundle=Bundle().apply {
+                putSerializable("article",it)
+            }
+            findNavController().navigate(R.id.action_headlinesFragment_to_articleFragment,bundle)
+        }
+
+        newsViewModel.headlines.observe(viewLifecycleOwner, Observer { response->
+            when(response){
+                is Resource.Success<*>->{
+                    hideProgressBar()
+                    hideErrorMessage()
+                    response.data?.let { newsResponse ->
+                        newsAdapter.differ.submitList(newsResponse.articles.toList())
+                        val totalPages=newsResponse.totalResults/Constants.QUERY_PAGE_SIZE + 2 //added +2 for buffer/extra
+                        isLastPage=newsViewModel.headlinesPage==totalPages
+                        if(isLastPage){
+                            binding.recyclerHeadlines.setPadding(0,0,0,0)
+                        }
+                    }
+                }
+                is Resource.Error<*>->{
+                    hideProgressBar()
+                    response.message?.let {message->
+                        Toast.makeText(activity,"Sorry Error: $message",Toast.LENGTH_LONG).show()
+                        showErrorMessage(message)
+                    }
+
+                }
+                is Resource.Loading<*>->{
+                    showProgressBar()
+                }
+            }
+        })
+
+        retryButton.setOnClickListener {
+            newsViewModel.getHeadlines("in")
+        }
+
     }
 
     var isError=false
@@ -60,6 +111,7 @@ class HeadlinesFragment : Fragment() {
         isError=true
     }
     //this is to load more items when scrolling
+    //this is called pagination
     val scrollListener=object :RecyclerView.OnScrollListener(){
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
@@ -90,6 +142,7 @@ class HeadlinesFragment : Fragment() {
             }
         }
     }
+
     //initialising recycler view and adding onScroll listener
     private fun setUpHeadLinesRecycler(){
         newsAdapter=NewsAdapter()
