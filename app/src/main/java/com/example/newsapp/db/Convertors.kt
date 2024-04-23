@@ -14,3 +14,6 @@ class Convertors {
         return Source(name,name)
     }
 }
+//Just mention
+//@TypeConverters(Convertors::class)
+//in database class

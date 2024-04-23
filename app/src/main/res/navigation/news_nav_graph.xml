@@ -12,7 +12,7 @@
             android:name="article"
             app:argType="com.example.newsapp.models.Article"/>
 <!--        argument is used to specify that this type of data-->
-<!--        will be shared when we navigate to this fragment-->
+<!--        will be sent when we navigate to this fragment-->
     </fragment>
 
     <fragment
