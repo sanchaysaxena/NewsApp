@@ -49,7 +49,6 @@ class NewsViewModel(app:Application, val newsRepository: NewsRepository):Android
                     val oldArticles=headlineResponse?.articles
                     val newArticles=resultResponse.articles
                     oldArticles?.addAll(newArticles)
-//                    headlineResponse?.articles=oldArticles
                 }
                 return Resource.Success(headlineResponse?:resultResponse)
             }

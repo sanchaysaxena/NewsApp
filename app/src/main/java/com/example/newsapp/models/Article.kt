@@ -9,15 +9,26 @@ import java.io.Serializable
 data class Article(
     @PrimaryKey(autoGenerate = true)
     var id:Int?=null,
-    val author: String?,
-    val content: String?,
-    val description: String?,
-    val publishedAt: String?,
-    val source: Source?,
-    val title: String?,
-    val url: String?,
-    val urlToImage: String?
-):Serializable
+    val author: String,
+    val content: String,
+    val description: String,
+    val publishedAt: String,
+    val source: Source,
+    val title: String,
+    val url: String,
+    val urlToImage: String
+):Serializable{
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        if(url.isNullOrEmpty()){
+            result = 31 * result + url.hashCode()
+        }
+        return result
+    }
+}
+//we add above override func to remove error
+// java.lang.NullPointerException: Attempt to invoke virtual method 'int java.lang.String.hashCode()' on a null object reference
+
 
 //here source data type is not supported by the database to store values
 //so we use type convertors->these are used to convert complex data types thaat are not supported by DB to a format that
