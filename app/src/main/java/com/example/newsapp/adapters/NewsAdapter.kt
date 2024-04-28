@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.SimpleAdapter
 import android.widget.TextView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -12,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.newsapp.R
 import com.example.newsapp.databinding.ItemNewsBinding
 import com.example.newsapp.models.Article
+import java.text.SimpleDateFormat
 
 class NewsAdapter:RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
     inner class ArticleViewHolder(itemView:View):RecyclerView.ViewHolder(itemView)
@@ -63,7 +65,9 @@ class NewsAdapter:RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
             articleSource.text=article.source?.name
             articleTitle.text=article.title
             articleDescription.text=article.description
-            articleDateTime.text=article.publishedAt
+            val parser=SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            val formatter=SimpleDateFormat("dd.MM.yyyy HH:mm")
+            articleDateTime.text=formatter.format(parser.parse(article.publishedAt)!!)
 
             setOnClickListener{
                 onItemClickListener?.let {
